@@ -9,7 +9,8 @@
   },
   "scripts": {
     "build": "vite build",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "npm run build",
+    "build-language": "lezer-generator languages/mini.grammar -o languages/parser.js"
   },
   "type": "module",
   "repository": {
@@ -39,9 +40,11 @@
     "@codemirror/state": "^6.2.0",
     "@codemirror/view": "^6.10.0",
     "@lezer/highlight": "^1.1.4",
+    "@lezer/lr": "^1.3.7",
     "@strudel.cycles/core": "workspace:*"
   },
   "devDependencies": {
+    "@lezer/generator": "^1.3.0",
     "vite": "^4.3.3"
   }
 }

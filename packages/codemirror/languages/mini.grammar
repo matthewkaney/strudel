@@ -1,0 +1,15 @@
+@top Pattern {
+  Stack | Alternation | Sequence
+}
+
+Stack {
+  Pattern ("," Pattern)*
+}
+
+Alternation {
+  Pattern ("," Pattern)*
+}
+
+Sequence {
+  Elements*
+}
