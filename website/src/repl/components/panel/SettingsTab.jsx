@@ -1,3 +1,4 @@
+import { useId } from 'react';
 import { defaultSettings, settingsMap, useSettings } from '../../../settings.mjs';
 import { themes } from '@strudel/codemirror';
 import { isUdels } from '../../util.mjs';
@@ -15,19 +16,24 @@ function Checkbox({ label, value, onChange, disabled = false }) {
   );
 }
 
-function SelectInput({ value, options, onChange }) {
+function SelectInput({ label, value, options, onChange }) {
+  const id = useId();
   return (
-    <select
-      className="p-2 bg-background rounded-md text-foreground"
-      value={value}
-      onChange={(e) => onChange(e.target.value)}
-    >
-      {Object.entries(options).map(([k, label]) => (
-        <option key={k} className="bg-background" value={k}>
-          {label}
-        </option>
-      ))}
-    </select>
+    <>
+      <label htmlFor={id}>{label}</label>
+      <select
+        id={id}
+        className="p-2 bg-background rounded-md text-foreground"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+      >
+        {Object.entries(options).map(([k, label]) => (
+          <option key={k} className="bg-background" value={k}>
+            {label}
+          </option>
+        ))}
+      </select>
+    </>
   );
 }
 
@@ -53,10 +59,14 @@ function NumberSlider({ value, onChange, step = 1, ...rest }) {
   );
 }
 
-function FormItem({ label, children }) {
+function FormItem({ children }) {
+  return <div className="grid gap-2">{children}</div>;
+}
+
+function ItemGroup({ label, children }) {
   return (
     <div className="grid gap-2">
-      <label>{label}</label>
+      <div>{label}</div>
       {children}
     </div>
   );
@@ -110,7 +120,7 @@ export function SettingsTab({ started }) {
   return (
     <div className="text-foreground p-4 space-y-4 w-full">
       {canChangeAudioDevice && (
-        <FormItem label="Audio Output Device">
+        <FormItem>
           <AudioDeviceSelector
             isDisabled={started}
             audioDeviceName={audioDeviceName}
@@ -125,7 +135,7 @@ export function SettingsTab({ started }) {
           />
         </FormItem>
       )}
-      <FormItem label="Audio Engine Target">
+      <FormItem>
         <AudioEngineTargetSelector
           target={audioEngineTarget}
           onChange={(target) => {
@@ -138,12 +148,18 @@ export function SettingsTab({ started }) {
           }}
         />
       </FormItem>
-      <FormItem label="Theme">
-        <SelectInput options={themeOptions} value={theme} onChange={(theme) => settingsMap.setKey('theme', theme)} />
+      <FormItem>
+        <SelectInput
+          label="Theme"
+          options={themeOptions}
+          value={theme}
+          onChange={(theme) => settingsMap.setKey('theme', theme)}
+        />
       </FormItem>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <FormItem label="Font Family">
+        <FormItem>
           <SelectInput
+            label="Font Family"
             options={fontFamilyOptions}
             value={fontFamily}
             onChange={(fontFamily) => settingsMap.setKey('fontFamily', fontFamily)}
@@ -198,76 +214,78 @@ export function SettingsTab({ started }) {
           value={togglePanelTrigger == 'hover'}
         /> */}
       </FormItem>
-      <FormItem label="More Settings">
-        <Checkbox
-          label="Enable bracket matching"
-          onChange={(cbEvent) => settingsMap.setKey('isBracketMatchingEnabled', cbEvent.target.checked)}
-          value={isBracketMatchingEnabled}
-        />
-        <Checkbox
-          label="Auto close brackets"
-          onChange={(cbEvent) => settingsMap.setKey('isBracketClosingEnabled', cbEvent.target.checked)}
-          value={isBracketClosingEnabled}
-        />
-        <Checkbox
-          label="Display line numbers"
-          onChange={(cbEvent) => settingsMap.setKey('isLineNumbersDisplayed', cbEvent.target.checked)}
-          value={isLineNumbersDisplayed}
-        />
-        <Checkbox
-          label="Highlight active line"
-          onChange={(cbEvent) => settingsMap.setKey('isActiveLineHighlighted', cbEvent.target.checked)}
-          value={isActiveLineHighlighted}
-        />
-        <Checkbox
-          label="Highlight events in code"
-          onChange={(cbEvent) => settingsMap.setKey('isPatternHighlightingEnabled', cbEvent.target.checked)}
-          value={isPatternHighlightingEnabled}
-        />
-        <Checkbox
-          label="Enable auto-completion"
-          onChange={(cbEvent) => settingsMap.setKey('isAutoCompletionEnabled', cbEvent.target.checked)}
-          value={isAutoCompletionEnabled}
-        />
-        <Checkbox
-          label="Enable tooltips on Ctrl and hover"
-          onChange={(cbEvent) => settingsMap.setKey('isTooltipEnabled', cbEvent.target.checked)}
-          value={isTooltipEnabled}
-        />
-        <Checkbox
-          label="Enable line wrapping"
-          onChange={(cbEvent) => settingsMap.setKey('isLineWrappingEnabled', cbEvent.target.checked)}
-          value={isLineWrappingEnabled}
-        />
-        <Checkbox
-          label="Enable flashing on evaluation"
-          onChange={(cbEvent) => settingsMap.setKey('isFlashEnabled', cbEvent.target.checked)}
-          value={isFlashEnabled}
-        />
-        <Checkbox
-          label="Sync across Browser Tabs / Windows"
-          onChange={(cbEvent) => {
-            const newVal = cbEvent.target.checked;
-            confirmDialog(RELOAD_MSG).then((r) => {
-              if (r) {
-                settingsMap.setKey('isSyncEnabled', newVal);
-                window.location.reload();
-              }
-            });
-          }}
-          disabled={shouldAlwaysSync}
-          value={isSyncEnabled}
-        />
-        <Checkbox
-          label="Hide top buttons"
-          onChange={(cbEvent) => settingsMap.setKey('isButtonRowHidden', cbEvent.target.checked)}
-          value={isButtonRowHidden}
-        />
-        <Checkbox
-          label="Disable CSS Animations"
-          onChange={(cbEvent) => settingsMap.setKey('isCSSAnimationDisabled', cbEvent.target.checked)}
-          value={isCSSAnimationDisabled}
-        />
+      <FormItem>
+        <ItemGroup label="More Settings">
+          <Checkbox
+            label="Enable bracket matching"
+            onChange={(cbEvent) => settingsMap.setKey('isBracketMatchingEnabled', cbEvent.target.checked)}
+            value={isBracketMatchingEnabled}
+          />
+          <Checkbox
+            label="Auto close brackets"
+            onChange={(cbEvent) => settingsMap.setKey('isBracketClosingEnabled', cbEvent.target.checked)}
+            value={isBracketClosingEnabled}
+          />
+          <Checkbox
+            label="Display line numbers"
+            onChange={(cbEvent) => settingsMap.setKey('isLineNumbersDisplayed', cbEvent.target.checked)}
+            value={isLineNumbersDisplayed}
+          />
+          <Checkbox
+            label="Highlight active line"
+            onChange={(cbEvent) => settingsMap.setKey('isActiveLineHighlighted', cbEvent.target.checked)}
+            value={isActiveLineHighlighted}
+          />
+          <Checkbox
+            label="Highlight events in code"
+            onChange={(cbEvent) => settingsMap.setKey('isPatternHighlightingEnabled', cbEvent.target.checked)}
+            value={isPatternHighlightingEnabled}
+          />
+          <Checkbox
+            label="Enable auto-completion"
+            onChange={(cbEvent) => settingsMap.setKey('isAutoCompletionEnabled', cbEvent.target.checked)}
+            value={isAutoCompletionEnabled}
+          />
+          <Checkbox
+            label="Enable tooltips on Ctrl and hover"
+            onChange={(cbEvent) => settingsMap.setKey('isTooltipEnabled', cbEvent.target.checked)}
+            value={isTooltipEnabled}
+          />
+          <Checkbox
+            label="Enable line wrapping"
+            onChange={(cbEvent) => settingsMap.setKey('isLineWrappingEnabled', cbEvent.target.checked)}
+            value={isLineWrappingEnabled}
+          />
+          <Checkbox
+            label="Enable flashing on evaluation"
+            onChange={(cbEvent) => settingsMap.setKey('isFlashEnabled', cbEvent.target.checked)}
+            value={isFlashEnabled}
+          />
+          <Checkbox
+            label="Sync across Browser Tabs / Windows"
+            onChange={(cbEvent) => {
+              const newVal = cbEvent.target.checked;
+              confirmDialog(RELOAD_MSG).then((r) => {
+                if (r) {
+                  settingsMap.setKey('isSyncEnabled', newVal);
+                  window.location.reload();
+                }
+              });
+            }}
+            disabled={shouldAlwaysSync}
+            value={isSyncEnabled}
+          />
+          <Checkbox
+            label="Hide top buttons"
+            onChange={(cbEvent) => settingsMap.setKey('isButtonRowHidden', cbEvent.target.checked)}
+            value={isButtonRowHidden}
+          />
+          <Checkbox
+            label="Disable CSS Animations"
+            onChange={(cbEvent) => settingsMap.setKey('isCSSAnimationDisabled', cbEvent.target.checked)}
+            value={isCSSAnimationDisabled}
+          />
+        </ItemGroup>
       </FormItem>
       <FormItem label="Zen Mode">Try clicking the logo in the top left!</FormItem>
       <FormItem label="Reset Settings">

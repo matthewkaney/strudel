@@ -13,7 +13,13 @@ export function AudioEngineTargetSelector({ target, onChange, isDisabled }) {
   ]);
   return (
     <div className=" flex flex-col gap-1">
-      <SelectInput isDisabled={isDisabled} options={options} value={target} onChange={onTargetChange} />
+      <SelectInput
+        label="Audio Engine Target"
+        isDisabled={isDisabled}
+        options={options}
+        value={target}
+        onChange={onTargetChange}
+      />
       {target === audioEngineTargets.osc && (
         <div>
           <p className="text-sm italic">

@@ -31,6 +31,7 @@ export function AudioDeviceSelector({ audioDeviceName, onChange, isDisabled }) {
   });
   return (
     <SelectInput
+      label="Audio Output Device"
       isDisabled={isDisabled}
       options={options}
       onClick={onClick}
