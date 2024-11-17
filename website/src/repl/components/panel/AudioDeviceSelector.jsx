@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { getAudioDevices, setAudioDevice } from '../../util.mjs';
-import { SelectInput } from './SelectInput';
+import { SelectInput } from './Forms';
 
 const initdevices = new Map();
 

@@ -1,63 +1,10 @@
-import { useId } from 'react';
 import { defaultSettings, settingsMap, useSettings } from '../../../settings.mjs';
 import { themes } from '@strudel/codemirror';
 import { isUdels } from '../../util.mjs';
-import { ButtonGroup } from './Forms.jsx';
+import { Checkbox, ButtonGroup, SelectInput, NumberSlider } from './Forms.jsx';
 import { AudioDeviceSelector } from './AudioDeviceSelector.jsx';
 import { AudioEngineTargetSelector } from './AudioEngineTargetSelector.jsx';
 import { confirmDialog } from '../../util.mjs';
-
-function Checkbox({ label, value, onChange, disabled = false }) {
-  return (
-    <label>
-      <input disabled={disabled} type="checkbox" checked={value} onChange={onChange} />
-      {' ' + label}
-    </label>
-  );
-}
-
-function SelectInput({ label, value, options, onChange }) {
-  const id = useId();
-  return (
-    <>
-      <label htmlFor={id}>{label}</label>
-      <select
-        id={id}
-        className="p-2 bg-background rounded-md text-foreground"
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-      >
-        {Object.entries(options).map(([k, label]) => (
-          <option key={k} className="bg-background" value={k}>
-            {label}
-          </option>
-        ))}
-      </select>
-    </>
-  );
-}
-
-function NumberSlider({ value, onChange, step = 1, ...rest }) {
-  return (
-    <div className="flex space-x-2 gap-1">
-      <input
-        className="p-2 grow"
-        type="range"
-        value={value}
-        step={step}
-        onChange={(e) => onChange(Number(e.target.value))}
-        {...rest}
-      />
-      <input
-        type="number"
-        value={value}
-        step={step}
-        className="w-16 bg-background rounded-md"
-        onChange={(e) => onChange(Number(e.target.value))}
-      />
-    </div>
-  );
-}
 
 function FormItem({ children }) {
   return <div className="grid gap-2">{children}</div>;
@@ -175,22 +122,25 @@ export function SettingsTab({ started }) {
           />
         </FormItem>
       </div>
-      <FormItem label="Keybindings">
+      <FormItem>
         <ButtonGroup
+          label="Keybindings"
           value={keybindings}
           onChange={(keybindings) => settingsMap.setKey('keybindings', keybindings)}
           items={{ codemirror: 'Codemirror', vim: 'Vim', emacs: 'Emacs', vscode: 'VSCode' }}
         ></ButtonGroup>
       </FormItem>
-      <FormItem label="Panel Position">
+      <FormItem>
         <ButtonGroup
+          label="Panel Position"
           value={panelPosition}
           onChange={(value) => settingsMap.setKey('panelPosition', value)}
           items={{ bottom: 'Bottom', right: 'Right' }}
         ></ButtonGroup>
       </FormItem>
-      <FormItem label="Open Panel on:                       ">
+      <FormItem>
         <ButtonGroup
+          label="Open Panel on:"
           value={togglePanelTrigger}
           onChange={(value) => settingsMap.setKey('togglePanelTrigger', value)}
           items={{ click: 'Click', hover: 'Hover' }}
@@ -287,8 +237,12 @@ export function SettingsTab({ started }) {
           />
         </ItemGroup>
       </FormItem>
-      <FormItem label="Zen Mode">Try clicking the logo in the top left!</FormItem>
-      <FormItem label="Reset Settings">
+      <FormItem>
+        <div>Zen Mode</div>
+        <div>Try clicking the logo in the top left!</div>
+      </FormItem>
+      <FormItem>
+        <label>Reset Settings</label>
         <button
           className="bg-background p-2 max-w-[300px] rounded-md hover:opacity-50"
           onClick={() => {
