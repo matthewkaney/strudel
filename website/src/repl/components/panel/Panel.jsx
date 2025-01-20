@@ -1,3 +1,4 @@
+import { useRef } from 'react';
 import cx from '@src/cx.mjs';
 import { setPanelPinned, setActiveFooter as setTab, setIsPanelOpened, useSettings } from '../../../settings.mjs';
 import { ConsoleTab } from './ConsoleTab';
@@ -140,8 +141,10 @@ function PanelTab({ label, isSelected, onClick }) {
         onClick={onClick}
         className={cx(
           'h-8 px-2 text-foreground cursor-pointer hover:opacity-50 flex items-center space-x-1 border-b',
+          'focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-blue-500 focus-visible:outline-none',
           isSelected ? 'border-foreground' : 'border-transparent',
         )}
+        tabIndex={isSelected ? 0 : -1}
       >
         {label}
       </button>
@@ -149,8 +152,38 @@ function PanelTab({ label, isSelected, onClick }) {
   );
 }
 function Tabs({ setTab, tab, className }) {
+  const ref = useRef();
+
   return (
-    <div className={cx('flex select-none max-w-full overflow-auto pb-2', className)}>
+    <div
+      ref={ref}
+      className={cx('flex select-none max-w-full overflow-auto pb-2', className)}
+      onKeyDown={(event) => {
+        if (event.key === 'ArrowRight' || event.key === 'ArrowLeft') {
+          // We should always have a ref to the tab list, but double-check this
+          if (!ref.current) {
+            return;
+          }
+
+          const direction = event.key === 'ArrowRight' ? 1 : -1;
+          const children = Array.from(ref.current.children);
+
+          // Double-check that the active element is one of the tab list's children
+          // The key callback only fires when the tab list has focus and its button children
+          // are the only focusable elements, but if this isn't true, we're in a weird state
+          const currentIndex = children.indexOf(document.activeElement);
+          if (currentIndex === -1) {
+            return;
+          }
+
+          // Find the next child and focus that
+          const nextIndex = (currentIndex + children.length + direction) % children.length;
+          children[nextIndex].focus();
+
+          event.preventDefault();
+        }
+      }}
+    >
       {Object.keys(tabNames).map((key) => {
         const val = tabNames[key];
         return <PanelTab key={key} isSelected={tab === val} label={key} onClick={() => setTab(val)} />;
