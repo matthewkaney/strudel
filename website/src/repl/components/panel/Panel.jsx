@@ -66,6 +66,7 @@ export function VerticalPanel({ context }) {
           aria-label="open menu panel"
           className={cx(
             'flex flex-col hover:bg-lineBackground items-center cursor-pointer justify-center w-full  h-full',
+            'focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-blue-500 focus-visible:outline-none',
           )}
         >
           <ChevronLeftIcon className="text-foreground opacity-50 w-6 h-6" />
@@ -211,6 +212,7 @@ function PinButton({ pinned }) {
       onClick={() => setPanelPinned(!pinned)}
       className={cx(
         'text-foreground max-h-8 min-h-8 max-w-8 min-w-8 items-center justify-center p-1.5 group-hover:flex',
+        'focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-blue-500 focus-visible:outline-none',
         pinned ? 'flex' : 'hidden',
       )}
       aria-label="Pin Menu Panel"
@@ -236,6 +238,7 @@ function CloseButton({ onClick }) {
       onClick={onClick}
       className={cx(
         'text-foreground max-h-8 min-h-8 max-w-8 min-w-8 items-center justify-center p-1.5 group-hover:flex',
+        'focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-blue-500 focus-visible:outline-none',
       )}
       aria-label="Close Menu"
     >

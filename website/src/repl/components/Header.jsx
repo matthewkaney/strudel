@@ -70,6 +70,7 @@ export function Header({ context, embedded = false }) {
               !isEmbedded ? 'p-2' : 'px-2',
               'hover:opacity-50',
               !started && !isCSSAnimationDisabled && 'animate-pulse',
+              'focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-blue-500 focus-visible:outline-none',
             )}
           >
             {!pending ? (
@@ -88,6 +89,7 @@ export function Header({ context, embedded = false }) {
               'flex items-center space-x-1',
               !isEmbedded ? 'p-2' : 'px-2',
               !isDirty || !activeCode ? 'opacity-50' : 'hover:opacity-50',
+              'focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-blue-500 focus-visible:outline-none',
             )}
           >
             {!isEmbedded && <span>update</span>}
@@ -95,7 +97,10 @@ export function Header({ context, embedded = false }) {
           {!isEmbedded && (
             <button
               title="shuffle"
-              className="hover:opacity-50 p-2 flex items-center space-x-1"
+              className={cx(
+                'hover:opacity-50 p-2 flex items-center space-x-1',
+                'focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-blue-500 focus-visible:outline-none',
+              )}
               onClick={handleShuffle}
             >
               <span> shuffle</span>
@@ -107,6 +112,7 @@ export function Header({ context, embedded = false }) {
               className={cx(
                 'cursor-pointer hover:opacity-50 flex items-center space-x-1',
                 !isEmbedded ? 'p-2' : 'px-2',
+                'focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-blue-500 focus-visible:outline-none',
               )}
               onClick={handleShare}
             >
@@ -117,7 +123,11 @@ export function Header({ context, embedded = false }) {
             <a
               title="learn"
               href={`${baseNoTrailing}/workshop/getting-started/`}
-              className={cx('hover:opacity-50 flex items-center space-x-1', !isEmbedded ? 'p-2' : 'px-2')}
+              className={cx(
+                'hover:opacity-50 flex items-center space-x-1',
+                !isEmbedded ? 'p-2' : 'px-2',
+                'focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-blue-500 focus-visible:outline-none',
+              )}
             >
               <span>learn</span>
             </a>
