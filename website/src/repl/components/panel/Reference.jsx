@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { memo, useMemo, useState } from 'react';
 
 import jsdocJson from '../../../../../doc.json';
 const availableFunctions = jsdocJson.docs
@@ -11,7 +11,7 @@ const getInnerText = (html) => {
   return div.textContent || div.innerText || '';
 };
 
-export function Reference() {
+export const Reference = memo(() => {
   const [search, setSearch] = useState('');
 
   const visibleFunctions = useMemo(() => {
@@ -87,4 +87,4 @@ export function Reference() {
       </div>
     </div>
   );
-}
+});
