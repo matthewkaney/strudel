@@ -1,0 +1,37 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Superdough Sample Map",
+
+  "type": "object",
+  "properties": {
+    "_base": {
+     "type": "string"
+    }
+  },
+
+  "additionalProperties": {
+    "$comment": "These might be patternProperties instead if we have any built-in restrictions on what's a proper sample name",
+    "anyOf": [
+      { 
+        "description": "A path to a single sample file",
+        "type": "string"
+      },
+      {
+        "description": "A list of sample paths to be referenced with `n` index",
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      {
+        "description": "A map of note names sample paths for pitched samples",
+        "type": "object",
+        "patternProperties": {
+          "^[a-gA-G][0-9]+$": {
+            "type": "string"
+          }
+        }
+      }
+    ]
+  }
+}
