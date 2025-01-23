@@ -26,7 +26,8 @@ export const Reference = memo(() => {
 
   return (
     <div className="flex h-full w-full p-2 text-foreground overflow-hidden">
-      <div className="h-full  flex flex-col gap-2 w-1/3 max-w-72 ">
+      {/*
+      <div className="h-full flex flex-col gap-2 w-1/3 max-w-72 ">
         <div class="w-full flex">
           <input
             className="w-full p-1 bg-background rounded-md border-none"
@@ -47,31 +48,42 @@ export const Reference = memo(() => {
               }}
             >
               {entry.name} {/* <span className="text-gray-600">{entry.meta.filename}</span> */}
-            </a>
+      {/* </a>
           ))}
         </div>
       </div>
+      */}
       <div
         className="break-normal flex-grow flex-col overflow-y-auto overflow-x-hidden   px-2 flex relative"
         id="reference-container"
       >
         <div className="prose dark:prose-invert min-w-full px-1 ">
           <h2>API Reference</h2>
+          <div class="w-full flex">
+            <input
+              className="w-full p-1 bg-background rounded-md border-none"
+              placeholder="Search"
+              value={search}
+              onInput={(event) => setSearch(event.target.value)}
+            />
+          </div>
           <p>
             This is the long list of functions you can use. Remember that you don't need to remember all of those and
             that you can already make music with a small set of functions!
           </p>
           {visibleFunctions.map((entry, i) => (
             <section key={i}>
-              <h3 id={`doc-${i}`}>{entry.name}</h3>
+              <h3 id={`doc-${i}`} className="inline-block mb-0">
+                <a>{entry.name}</a>
+              </h3>
               {!!entry.synonyms_text && (
-                <p>
+                <span>
                   Synonyms: <code>{entry.synonyms_text}</code>
-                </p>
+                </span>
               )}
               {/* <small>{entry.meta.filename}</small> */}
-              <p dangerouslySetInnerHTML={{ __html: entry.description }}></p>
-              <ul>
+              {/* <div dangerouslySetInnerHTML={{ __html: entry.description }}></div> */}
+              {/* <ul>
                 {entry.params?.map(({ name, type, description }, i) => (
                   <li key={i}>
                     {name} : {type.names?.join(' | ')} {description ? <> - {getInnerText(description)}</> : ''}
@@ -80,7 +92,7 @@ export const Reference = memo(() => {
               </ul>
               {entry.examples?.map((example, j) => (
                 <pre key={j}>{example}</pre>
-              ))}
+              ))} */}
             </section>
           ))}
         </div>
