@@ -94,20 +94,17 @@ export class Pattern {
     return result;
   }
 
+  // Synonym for withValue
+  fmap(func) {
+    return this.withValue(func);
+  }
+
   // runs func on query state
   withState(func) {
     return this.withHaps((haps, state) => {
       func(state);
       return haps;
     });
-  }
-
-  /**
-   * see `withValue`
-   * @noAutocomplete
-   */
-  fmap(func) {
-    return this.withValue(func);
   }
 
   /**
@@ -1155,12 +1152,6 @@ function _composeOp(a, b, func) {
   };
 })();
 
-// aliases
-export const polyrhythm = stack;
-export const pr = stack;
-
-export const pm = s_polymeter;
-
 // methods that create patterns, which are added to patternified Pattern methods
 // TODO: remove? this is only used in old transpiler (shapeshifter)
 // Pattern.prototype.factories = {
@@ -1269,6 +1260,10 @@ export function stack(...pats) {
   return result;
 }
 
+// Synonyms for stack
+export const polyrhythm = stack;
+export const pr = stack;
+
 function _stackWith(func, pats) {
   pats = pats.map((pat) => (Array.isArray(pat) ? sequence(...pat) : reify(pat)));
   if (pats.length === 0) {
@@ -1329,12 +1324,18 @@ export function stackBy(by, ...pats) {
 
 /** Concatenation: combines a list of patterns, switching between them successively, one per cycle:
  *
- * synonyms: `cat`
- *
+ * @synonyms cat
+ * @param {...any} pats The patterns to concatenate
  * @return {Pattern}
- * @example
- * slowcat("e5", "b4", ["d5", "c5"])
+ *  * @example
+ * slowcat("e5", "b4", ["d5", "c5"]).note()
+ * // "<e5 b4 [d5 c5]>".note()
  *
+ * @example
+ * // As a chained function:
+ * s("hh*4").slowcat(
+ *    note("c4(5,8)")
+ * )
  */
 export function slowcat(...pats) {
   // Array test here is to avoid infinite recursions..
@@ -1362,6 +1363,9 @@ export function slowcat(...pats) {
   return new Pattern(query).splitQueries().setTactus(tactus);
 }
 
+// Synonym for slowcat
+export const cat = slowcat;
+
 /** Concatenation: combines a list of patterns, switching between them successively, one per cycle. Unlike slowcat, this version will skip cycles.
  * @param {...any} items - The items to concatenate
  * @return {Pattern}
@@ -1374,25 +1378,6 @@ export function slowcatPrime(...pats) {
     return pat?.query(state) || [];
   };
   return new Pattern(query).splitQueries();
-}
-
-/** The given items are con**cat**enated, where each one takes one cycle.
- *
- * @param {...any} items - The items to concatenate
- * @synonyms slowcat
- * @return {Pattern}
- * @example
- * cat("e5", "b4", ["d5", "c5"]).note()
- * // "<e5 b4 [d5 c5]>".note()
- *
- * @example
- * // As a chained function:
- * s("hh*4").cat(
- *    note("c4(5,8)")
- * )
- */
-export function cat(...pats) {
-  return slowcat(...pats);
 }
 
 /**
@@ -1930,23 +1915,13 @@ export const lastOf = register('lastOf', function (n, func, pat) {
 /**
  * Applies the given function every n cycles, starting from the first cycle.
  * @name firstOf
+ * @synonyms every
  * @memberof Pattern
  * @param {number} n how many cycles
  * @param {function} func function to apply
  * @returns Pattern
  * @example
  * note("c3 d3 e3 g3").firstOf(4, x=>x.rev())
- */
-
-/**
- * An alias for `firstOf`
- * @name every
- * @memberof Pattern
- * @param {number} n how many cycles
- * @param {function} func function to apply
- * @returns Pattern
- * @example
- * note("c3 d3 e3 g3").every(4, x=>x.rev())
  */
 export const { firstOf, every } = register(['firstOf', 'every'], function (n, func, pat) {
   const pats = Array(n - 1).fill(pat);
@@ -2336,15 +2311,7 @@ export const stut = register('stut', function (times, feedback, time, pat) {
   return pat._echoWith(times, time, (pat, i) => pat.gain(Math.pow(feedback, i)));
 });
 
-/**
- * Divides a pattern into a given number of subdivisions, plays the subdivisions in order, but increments the starting subdivision each cycle. The pattern wraps to the first subdivision after the last subdivision is played.
- * @name iter
- * @memberof Pattern
- * @returns Pattern
- * @example
- * note("0 1 2 3".scale('A minor')).iter(4)
- */
-
+// Innards for `iter` and `iterBack`
 const _iter = function (times, pat, back = false) {
   times = Fraction(times);
   return slowcat(
@@ -2354,6 +2321,14 @@ const _iter = function (times, pat, back = false) {
   );
 };
 
+/**
+ * Divides a pattern into a given number of subdivisions, plays the subdivisions in order, but increments the starting subdivision each cycle. The pattern wraps to the first subdivision after the last subdivision is played.
+ * @name iter
+ * @memberof Pattern
+ * @returns Pattern
+ * @example
+ * note("0 1 2 3".scale('A minor')).iter(4)
+ */
 export const iter = register(
   'iter',
   function (times, pat) {
@@ -2404,16 +2379,7 @@ export const { repeatCycles } = register(
   true,
 );
 
-/**
- * Divides a pattern into a given number of parts, then cycles through those parts in turn, applying the given function to each part in turn (one part per cycle).
- * @name chunk
- * @synonyms slowChunk, slowchunk
- * @memberof Pattern
- * @returns Pattern
- * @example
- * "0 1 2 3".chunk(4, x=>x.add(7))
- * .scale("A:minor").note()
- */
+// Innards for `chunk` and friends
 const _chunk = function (n, func, pat, back = false, fast = false) {
   const binary = Array(n - 1).fill(false);
   binary.unshift(true);
@@ -2426,6 +2392,16 @@ const _chunk = function (n, func, pat, back = false, fast = false) {
   return pat.when(binary_pat, func);
 };
 
+/**
+ * Divides a pattern into a given number of parts, then cycles through those parts in turn, applying the given function to each part in turn (one part per cycle).
+ * @name chunk
+ * @synonyms slowChunk, slowchunk
+ * @memberof Pattern
+ * @returns Pattern
+ * @example
+ * "0 1 2 3".chunk(4, x=>x.add(7))
+ * .scale("A:minor").note()
+ */
 export const { chunk, slowchunk, slowChunk } = register(['chunk', 'slowchunk', 'slowChunk'], function (n, func, pat) {
   return _chunk(n, func, pat, false, false);
 });
@@ -2685,6 +2661,9 @@ export function s_polymeter(...args) {
   return result;
 }
 
+// Alias for `s_polymeter`
+export const pm = s_polymeter;
+
 /** Sequences patterns like `seq`, but each pattern has a length, relative to the whole.
  * This length can either be provided as a [length, pattern] pair, or inferred from
  * the pattern's 'tactus', generally inferred by the mininotation. Has the alias `timecat`.
@@ -2740,7 +2719,7 @@ export function s_cat(...timepats) {
   return result;
 }
 
-/** Aliases for `s_cat` */
+// Aliases for `s_cat`
 export const timecat = s_cat;
 export const timeCat = s_cat;
 
@@ -2955,15 +2934,7 @@ export const striate = register('striate', function (n, pat) {
     .setTactus(__tactus ? Fraction(n).mulmaybe(pat.tactus) : undefined);
 });
 
-/**
- * Makes the sample fit the given number of cycles by changing the speed.
- * @name loopAt
- * @memberof Pattern
- * @returns Pattern
- * @example
- * samples({ rhodes: 'https://cdn.freesound.org/previews/132/132051_316502-lq.mp3' })
- * s("rhodes").loopAt(2)
- */
+// Innards shared by `loopAt` and `loopAtCps`
 // TODO - global cps clock
 const _loopAt = function (factor, pat, cps = 0.5) {
   return pat
@@ -2985,7 +2956,6 @@ const _loopAt = function (factor, pat, cps = 0.5) {
  * samples('github:tidalcycles/dirt-samples')
  * s("breaks125").fit().slice([0,.25,.5,.75], "0 1 1 <2 3>")
  */
-
 export const slice = register(
   'slice',
   function (npat, ipat, opat) {
@@ -3014,7 +2984,6 @@ export const slice = register(
  * s("breaks165")
  * .splice(8,  "0 1 [2 3 0]@2 3 0@2 7")
  */
-
 export const splice = register(
   'splice',
   function (npat, ipat, opat) {
@@ -3037,6 +3006,16 @@ export const splice = register(
   false, // turns off auto-patternification
 );
 
+/**
+ * Makes the sample fit the given number of cycles by changing the speed.
+ * @name loopAt
+ * @synonyms loopat
+ * @memberof Pattern
+ * @returns Pattern
+ * @example
+ * samples({ rhodes: 'https://cdn.freesound.org/previews/132/132051_316502-lq.mp3' })
+ * s("rhodes").loopAt(2)
+ */
 export const { loopAt, loopat } = register(['loopAt', 'loopat'], function (factor, pat) {
   const tactus = pat.tactus ? pat.tactus.div(factor) : undefined;
   return new Pattern((state) => _loopAt(factor, pat, state.controls._cps).query(state), tactus);
